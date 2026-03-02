@@ -1,0 +1,27 @@
+const mongoose = require('mongoose');
+
+const gallerySchema = new mongoose.Schema({
+    title: {
+        type: String,
+        required: true
+    },
+    type: {
+        type: String,
+        enum: ['photo_album', 'video'],
+        required: true
+    },
+    description: {
+        type: String
+    },
+    cover_image_path: {
+        type: String
+    },
+    video_url: {
+        type: String
+    }
+}, {
+    timestamps: true
+});
+
+const Gallery = mongoose.model('Gallery', gallerySchema);
+module.exports = Gallery;

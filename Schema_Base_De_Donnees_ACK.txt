@@ -1,0 +1,131 @@
+# SCHEMA DE BASE DE DONNEES : SITE INTERNET OFFICIEL ALI KADER COULIBALY
+
+Voici une proposition de structure de base de données relationnelle pour le CMS Laravel du site internet, basée sur le cahier des charges.
+
+## 1. Table `users` (Administrateurs)
+Gestion des accès au panel d'administration.
+- `id` (PK, BigInt)
+- `name` (String) : Nom de l'administrateur
+- `email` (String, Unique) : Adresse email de connexion
+- `password` (String) : Mot de passe hashé
+- `role` (Enum: 'superadmin', 'editor') : Rôle de l'utilisateur
+- `remember_token` (String)
+- `created_at` (Timestamp)
+- `updated_at` (Timestamp)
+
+## 2. Table `biography`
+Stockage des informations du parcours du Député-Maire (généralement une seule ligne active).
+- `id` (PK, BigInt)
+- `academic_background` (Text) : Parcours académique
+- `professional_background` (Text) : Parcours professionnel
+- `political_engagement` (Text) : Engagement politique
+- `vision_values` (Text) : Vision et valeurs
+- `created_at` (Timestamp)
+- `updated_at` (Timestamp)
+
+## 3. Table `posts` (Actualités : Articles, Communiqués, Discours, Evénements)
+Table centralisant tout le contenu dynamique d'actualité.
+- `id` (PK, BigInt)
+- `type` (Enum: 'article', 'press_release', 'speech', 'event') : Type de contenu
+- `title` (String) : Titre de l'actualité
+- `slug` (String, Unique) : URL optimisée SEO
+- `excerpt` (Text) : Résumé ou chapô
+- `content` (LongText) : Contenu complet (HTML via un éditeur WYSIWYG)
+- `image_path` (String, Nullable) : Image de mise en avant
+- `document_path` (String, Nullable) : Pour les communiqués PDF ou discours téléchargeables
+- `event_date` (DateTime, Nullable) : Date spécifique si le type est 'event'
+- `is_published` (Boolean, Default: true) : Statut de publication
+- `published_at` (DateTime) : Date de publication affichée
+- `created_at` (Timestamp)
+- `updated_at` (Timestamp)
+
+## 4. Table `projects` (Actions & Réalisations)
+Gestion des projets de la commune.
+- `id` (PK, BigInt)
+- `title` (String) : Titre du projet
+- `slug` (String, Unique) : URL optimisée SEO
+- `description` (Text) : Description du projet
+- `status` (Enum: 'completed', 'in_progress', 'upcomin  g') : Statut du projet (Réalisés, en cours, à venir)
+- `image_path` (String, Nullable) : Image principale du projet
+- `start_date` (Date, Nullable) : Date de début
+- `end_date` (Date, Nullable) : Date de fin
+- `created_at` (Timestamp)
+- `updated_at` (Timestamp)
+
+## 5. Table `galleries` (Galeries photos et vidéos)
+Organisation des médias.
+- `id` (PK, BigInt)
+- `title` (String) : Nom de l'album ou de la vidéo
+- `type` (Enum: 'photo_album', 'video') : Type de galerie
+- `description` (Text, Nullable) : Description courte
+- `cover_image_path` (String, Nullable) : Image de couverture de l'album
+- `video_url` (String, Nullable) : Lien YouTube/Vimeo si type = vidéo
+- `created_at` (Timestamp)
+- `updated_at` (Timestamp)
+
+## 6. Table `media` (Médias associés aux Galeries)
+Photos individuelles rattachées à un album (Relation 1..N avec Galleries).
+- `id` (PK, BigInt)
+- `gallery_id` (FK -> galleries.id)
+- `file_path` (String) : Chemin du fichier image
+- `caption` (String, Nullable) : Légende de l'image
+- `sort_order` (Integer, Default: 0) : Ordre d'affichage
+- `created_at` (Timestamp)
+- `updated_at` (Timestamp)
+
+## 7. Table `documents` (Documents Officiels)
+Gestion des rapports et communiqués PDF indépendants.
+- `id` (PK, BigInt)
+- `title` (String) : Titre du document
+- `type` (Enum: 'report', 'press_release_pdf', 'other') : Catégorie du document
+- `file_path` (String) : Chemin vers le fichier PDF
+- `description` (Text, Nullable)
+- `published_at` (Date)
+- `created_at` (Timestamp)
+- `updated_at` (Timestamp)
+
+## 8. Table `contacts` (Messages via le formulaire de contact)
+Historique des messages reçus via le site.
+- `id` (PK, BigInt)
+- `name` (String) : Nom de l'expéditeur
+- `email` (String) : Email de l'expéditeur
+- `phone` (String, Nullable) : Téléphone
+- `subject` (String) : Sujet du message
+- `message` (Text) : Contenu du message
+- `is_read` (Boolean, Default: false) : Statut de lecture dans l'administration
+- `created_at` (Timestamp)
+- `updated_at` (Timestamp)
+
+## 9. Table `supporters` (Base de données des sympathisants - Recommandation stratégique)
+Gestion de la mobilisation des citoyens (Rubrique "Agir avec nous").
+- `id` (PK, BigInt)
+- `first_name` (String)
+- `last_name` (String)
+- `email` (String, Unique)
+- `phone` (String, Nullable)
+- `city_district` (String, Nullable) : Quartier ou ville de résidence
+- `interests` (JSON, Nullable) : Thématiques d'intérêt (Jeunesse, emploi, environnement, etc.)
+- `wants_to_volunteer` (Boolean, Default: false) : Souhaite être bénévole/mobilisé
+- `opt_in_newsletter` (Boolean, Default: true) : Inscription à la newsletter politique
+- `created_at` (Timestamp)
+- `updated_at` (Timestamp)
+
+## 10. Table `newsletters` (Campagnes Newsletter)
+Gestion des envois de newsletters politiques.
+- `id` (PK, BigInt)
+- `subject` (String) : Sujet de l'email
+- `content` (LongText) : Contenu HTML de la newsletter
+- `status` (Enum: 'draft', 'scheduled', 'sent') : Statut de l'envoi
+- `scheduled_at` (DateTime, Nullable) : Date d'envoi programmée
+- `sent_at` (DateTime, Nullable) : Date d'envoi effectif
+- `created_at` (Timestamp)
+- `updated_at` (Timestamp)
+
+## 11. Table `settings` (Configurations générales du site)
+Paramétrages globaux (ex: mot de bienvenue Accueil, liens réseaux sociaux).
+- `id` (PK, BigInt)
+- `key` (String, Unique) : Clé de configuration (ex: 'welcome_message', 'facebook_url', 'contact_email')
+- `value` (Text, Nullable) : Valeur de la configuration
+- `type` (Enum: 'string', 'text', 'boolean', 'image') : Type de la valeur
+- `created_at` (Timestamp)
+- `updated_at` (Timestamp)
